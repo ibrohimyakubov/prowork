@@ -1,0 +1,13 @@
+{% include 'home.html' %}
+
+<div>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.bio }}
+        {{ form.country }}
+        {{ form.image }}
+        <button style="background-color: deepskyblue; border: 1px white; color: white; width: 100px; height: 40px; border-radius: 5px">
+            Update
+        </button>
+    </form>
+</div>

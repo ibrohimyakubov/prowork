@@ -1,0 +1,46 @@
+{% include 'home.html' %}
+<div class="container">
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th scope="col">Title</th>
+            <th scope="col">image</th>
+            <th scope="col">Description</th>
+            <th scope="col">Url</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>{{ project.title }}</td>
+            <td><a href="{{ project.image.url }}"><img src="{{ project.image.url }}" style="width: 300px; height: 300px"
+                                                       alt="chiqmadi"></a></td>
+            <td>{{ project.description }}</td>
+            <td>{{ project.url }}</td>
+        </tr>
+        </tbody>
+    </table>
+    <form action="{% url 'comment-of-post' project.pk %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <input name="comment" class="input" type="text" placeholder="Izoh"/>
+        </div>
+
+        {% if user.is_authenticated %}
+            <button type="submit">Send</button>
+        {% else %}
+            <h3>You need register or login</h3>
+        {% endif %}
+    </form>
+    <div class="container">
+        <div class="col-md-4">
+            {% for c in comment %}
+                <div class="mt-4">
+                    <h2>{{ c.owner.username }}</h2>
+                    <h4>{{ c.comment }}</h4>
+                    <h6>{{ c.created_at }}</h6>
+                </div>
+                <hr>
+            {% endfor %}
+        </div>
+    </div>
+</div>

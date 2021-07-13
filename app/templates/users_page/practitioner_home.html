@@ -1,0 +1,40 @@
+{% include 'home.html' %}
+<body>
+<<div style="background-color: #e5e5e5; width: 600px; height: 500px">
+    <h3>username {{ practitioner.user.username }}</h3>
+    <h2>Full Name{{ practitioner.user.full_name }}</h2>
+    <h3>user type {{ practitioner.user.user_type }}</h3>
+    <h3>Email {{ practitioner.user.email }}</h3>
+    <h3>Phone {{ practitioner.user.phone }}</h3>
+    {% if practitioner.country is not None %}
+        <h3>Country {{ practitioner.country }}</h3>
+    {% else %}
+        <h3>Country N/A</h3>
+    {% endif %}
+    <h4>{{ practitioner.bio }}</h4>
+<h2><a href="{% url 'user-update' %}">Update Profile</a></h2>
+</div>
+<form action="" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <table>
+        {{ form.as_p }}
+    </table>
+    <input type="submit" value="Submit">
+</form>
+
+
+<div>
+        <ul>
+        {% if idea_practitioner %}
+            {% for idea in idea_practitioner %}
+                <li>{{ idea.title }}</li>
+                <li>{{ idea.description }}</li>
+                <li>{{ idea.resume }}</li>
+                <li>{{ idea.created_at }}</li>
+            {% endfor %}
+        {% else %}
+            <h3>Sizda hozircha ariza yo'q</h3>
+        {% endif %}
+    </ul>
+</div>
+</body>

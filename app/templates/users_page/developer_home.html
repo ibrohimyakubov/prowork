@@ -1,0 +1,48 @@
+{% include 'home.html' %}
+<body>
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+<div style="background-color: #e5e5e5; width: 600px; height: 500px">
+    <h3>username {{ developer.user.username }}</h3>
+    <h2>Full Name{{ developer.user.full_name }}</h2>
+    <h3>user type {{ developer.user.user_type }}</h3>
+    <h3>Email {{ developer.user.email }}</h3>
+    <h3>Phone {{ developer.user.phone }}</h3>
+    {% if developer.country is not None %}
+        <h3>Country {{ developer.country }}</h3>
+    {% else %}
+        <h3>Country N/A</h3>
+    {% endif %}
+    <h4>{{ startapper.bio }}</h4>
+    <h2><a href="{% url 'user-update' %}">Update Profile</a></h2>
+</div>
+<form action="" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <table>
+        {{ form.as_table }}
+    </table>
+    <input type="submit" value="Submit">
+</form>
+
+
+<div>
+    <ul>
+        {% if idea_developer %}
+            {% for idea in idea_developer %}
+                <li>{{ idea.title }}</li>
+                <li>{{ idea.description }}</li>
+                <li>{{ idea.file }}</li>
+                <li>{{ idea.created_at }}</li>
+            {% endfor %}
+        {% else %}
+            <h3>Sizda hozircha arizalar yo'q</h3>
+        {% endif %}
+    </ul>
+</div>
+
+</body>

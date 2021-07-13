@@ -1,0 +1,45 @@
+{% include 'home.html' %}
+<body>
+<div style="background-color: #e5e5e5; width: 600px; height: 500px">
+    <h3>username {{ startapper.user.username }}</h3>
+    <h2>Full Name{{ startapper.user.full_name }}</h2>
+    <h3>user type {{ startapper.user.user_type }}</h3>
+    <h3>Email {{ startapper.user.email }}</h3>
+    <h3>Phone {{ startapper.user.phone }}</h3>
+    {% if startapper.country is not None %}
+        <h3>Country {{ startapper.country }}</h3>
+    {% else %}
+        <h3>Country N/A</h3>
+    {% endif %}
+    <h4>{{ startapper.bio }}</h4>
+    {% if startapper.image %}
+        <img src="{{ startapper.image.url }}" style="width: 100px; height: 50px" alt="dd">
+    {% else %}
+        <h3>No image</h3>
+    {% endif %}
+    <h2><a href="{% url 'user-update' %}">Change Profile</a></h2>
+    <h2><a href="{% url 'user-change' %}">Update Profile</a></h2>
+</div>
+
+
+<h2 style="color: deepskyblue">Create Idea !</h2>
+<form style="display: inline" action="" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <table>
+        {{ form.as_table }}
+    </table>
+    <input type="submit" value="Submit">
+</form>
+
+
+<div>
+    <ul>
+        {% for idea in idea_startapper %}
+            <li>{{ idea.title }}</li>
+            <li>{{ idea.description }}</li>
+            <p><a href="{{ idea.file }}">{{ idea.file }}</a></p>
+            <li>{{ idea.created_at }}</li>
+        {% endfor %}
+    </ul>
+</div>
+</body>
