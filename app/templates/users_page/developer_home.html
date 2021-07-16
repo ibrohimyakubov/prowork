@@ -1,13 +1,8 @@
 {% include 'home.html' %}
 <body>
-{% if messages %}
-    {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}" role="alert">
-            {{ message }}
-        </div>
-    {% endfor %}
-{% endif %}
 <div style="background-color: #e5e5e5; width: 600px; height: 500px">
+
+
     <h3>username {{ developer.user.username }}</h3>
     <h2>Full Name{{ developer.user.full_name }}</h2>
     <h3>user type {{ developer.user.user_type }}</h3>
@@ -29,7 +24,6 @@
     <input type="submit" value="Submit">
 </form>
 
-
 <div>
     <ul>
         {% if idea_developer %}
@@ -44,5 +38,14 @@
         {% endif %}
     </ul>
 </div>
+<h2 style="margin-top: 200px; color: deepskyblue">Create Idea !</h2>
+
+<form action="{% url 'all-users-idea' %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="text" name="title">
+    <input type="text" name="description">
+    <input type="file" name="file">
+    <button type="submit">Send</button>
+</form>
 
 </body>

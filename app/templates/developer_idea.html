@@ -1,0 +1,9 @@
+{% include 'home.html' %}
+
+<form style="display: inline" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <table>
+        {{ form_idea.as_p }}
+    </table>
+    <input type="submit" value="Submit">
+</form>

@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from .models import CustomUser, IdeaStartapper, ApplicationStaff, Startapper, Staff, CommentOfPost, COUNTRY
+from .models import CustomUser, IdeaStartapper, ApplicationStaff, Startapper, Staff, CommentOfPost, COUNTRY, \
+    AllUsersIdea
 
 
 class RegisterForm(UserCreationForm):
@@ -20,9 +21,16 @@ class RegisterForm(UserCreationForm):
 
 class IdeaStartapperForm(forms.ModelForm):
     class Meta:
-        file = forms.FileField()
+        # file = forms.FileField()
 
         model = IdeaStartapper
+        fields = ['title', 'description', 'file']
+
+
+class AllUsersIdeaForm(forms.ModelForm):
+    class Meta:
+        file = forms.FileField()
+        model = AllUsersIdea
         fields = ['title', 'description', 'file']
 
 
@@ -60,10 +68,11 @@ class UserUpdateForm(UserChangeForm):
 
 
 class StartapperUpdateForm(forms.ModelForm):
+    # image = forms.ImageField()
+
     class Meta:
         model = Startapper
-        # fields = "__all__"
-        exclude = ['user',]
+        fields = ['bio', 'country', 'image']
 
 
 class StaffUpdateForm(forms.ModelForm):

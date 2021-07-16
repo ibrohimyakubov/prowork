@@ -65,6 +65,8 @@ class Staff(models.Model):
     country = models.CharField(max_length=50, blank=True, null=True, choices=COUNTRY)
     image = models.ImageField(upload_to='staff_image', blank=True, null=True)
 
+    related = 'developer'
+
     def __str__(self):
         return f"{self.user.username} ----- {self.user.user_type}"
 
@@ -81,14 +83,14 @@ class IdeaStartapper(models.Model):
 
 
 class AllUsersIdea(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, )
+    user = models.ForeignKey(Staff, on_delete=models.CASCADE, )
     title = models.CharField(max_length=255)
     description = models.TextField()
-    file = models.FileField(upload_to='media/alluser_ideas', blank=True, null=True)
+    file = models.FileField(upload_to='alluser_ideas', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.full_name}  - {self.file}"
+        return f"{self.user.user.username} -------- {self.user.user.user_type} -------- {self.file}"
 
 
 class ApplicationStaff(models.Model):

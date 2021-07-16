@@ -1,20 +1,19 @@
-import django
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.utils.datastructures import MultiValueDictKeyError
 
 from .models import CustomUser, Startapper, Staff, IdeaStartapper, ApplicationStaff, SuccessProjects, CommentOfPost, \
-    AboutUS, ContacktsProwork
+    AboutUS, ContacktsProwork, AllUsersIdea
 from app.forms import RegisterForm, IdeaStartapperForm, ApplicationDeveloperForm, ApplicationPractitionerForm, \
-    UserUpdateForm, StartapperUpdateForm, CommentForm
-from django.views.generic import ListView, TemplateView, CreateView
+    UserUpdateForm, StartapperUpdateForm, CommentForm, AllUsersIdeaForm
 from django.views import View
+
 
 def home(request):
     return render(request, 'home.html')
@@ -69,6 +68,26 @@ def logout_(request):
     return HttpResponseRedirect('/')
 
 
+def all_users_idea(request):
+    url = request.META.get('HTTP_REFERER')
+    if request.method == 'POST':
+        form_as = AllUsersIdeaForm(request.POST, request.FILES)
+        if form_as.is_valid():
+            current_user = Staff.objects.get(user=request.user)
+            data = AllUsersIdea()
+            data.title = form_as.cleaned_data['title']
+            data.description = form_as.cleaned_data['description']
+            if request.FILES:
+                data.file = request.FILES['file']
+            else:
+                data.file = form_as.cleaned_data['file']
+            data.user = current_user
+            data.save()
+            messages.success(request, 'Successfully idea send!')
+            return HttpResponseRedirect(url)
+    return HttpResponseRedirect(url)
+
+
 @login_required(login_url='login')
 def developer_home(request):
     try:
@@ -99,15 +118,21 @@ def developer_home(request):
             messages.warning(request, 'Application not send!')
             return redirect('developer_home')
     form = ApplicationDeveloperForm()
-    return render(request, 'users_page/developer_home.html',
-                  {'developer': developer, 'form': form, 'idea_developer': idea_developer})
+
+    context = {
+        'developer': developer,
+        'idea_developer': idea_developer,
+        'form': form,
+    }
+    return render(request, 'users_page/developer_home.html', context)
 
 
 @login_required(login_url='login')
 def practitioner_home(request):
     try:
         practitioner = Staff.objects.get(user=request.user)
-        idea_practitioner = ApplicationStaff.objects.filter(user=practitioner)
+        application_practitioner = ApplicationStaff.objects.filter(user=practitioner)
+        idea_practitioner = AllUsersIdea.objects.filter(user=practitioner)
     except:
         messages.warning(request, 'you go to developer page')
         return redirect('home')
@@ -129,8 +154,26 @@ def practitioner_home(request):
             messages.warning(request, 'You Application not send!')
             return redirect('practitioner_home')
     form = ApplicationPractitionerForm()
-    return render(request, 'users_page/practitioner_home.html',
-                  {'practitioner': practitioner, 'form': form, 'idea_practitioner': idea_practitioner})
+    context = {
+        'practitioner': practitioner,
+        'form': form,
+        'application_practitioner': application_practitioner,
+        'idea_practitioner': idea_practitioner,
+    }
+    return render(request, 'users_page/practitioner_home.html', context)
+
+
+@login_required(login_url='login')
+def staff_update(request):
+    startapper = Staff.objects.get(user=request.user)
+    form = StartapperUpdateForm(instance=startapper)
+    if request.method == 'GET':
+        return render(request, 'profile_update.html', {'form': form})
+    else:
+        form = StartapperUpdateForm(request.POST, request.FILES, instance=startapper)
+        if form.is_valid():
+            form.save()
+        return redirect('startapper_home')
 
 
 @login_required(login_url='login')
@@ -166,6 +209,19 @@ def startapper_home(request):
                   {'startapper': startapper, 'form': form, 'idea_startapper': idea_startapper})
 
 
+@login_required(login_url='login')
+def startapper_update_(request):
+    startapper = Startapper.objects.get(user=request.user)
+    form = StartapperUpdateForm(instance=startapper)
+    if request.method == 'GET':
+        return render(request, 'profile_update.html', {'form': form})
+    else:
+        form = StartapperUpdateForm(request.POST, request.FILES, instance=startapper)
+        if form.is_valid():
+            form.save()
+        return redirect('startapper_home')
+
+
 @login_required(login_url='/login')
 def user_update(request):
     url = request.META.get('HTTP_REFERER')
@@ -198,74 +254,20 @@ def user_password(request):
         return render(request, 'user_password.html', {'form': form})
 
 
-@login_required(login_url='/login')
-def profile_update(request):
-    if request.method == 'POST':
-        form = StartapperUpdateForm(request.POST, request.FILES, instance=request.user)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Your profile successfully updated')
-            return redirect('startapper_home')
-    elif request.method == 'GET':
-        startapper = Startapper.objects.get(user=request.user)
-        form = StartapperUpdateForm(instance=startapper)
-        return render(request, 'profile_update.html', {'form': form})
-
-
-class UserProfilView(CreateView):
-    model = Startapper
-    form_class = StartapperUpdateForm
-    template_name = 'profile_update.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['form'] = StartapperUpdateForm(instance=self.request.user)
-        return context
-
-    def form_valid(self, form):
-        print(form)
-        form.instance.user = self.request.user
-        return super().form_valid(form)
-
-
-class Nimadir(LoginRequiredMixin, View):
+class StartapperUpdateView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        form = StartapperUpdateForm()
+        startapper = Startapper.objects.get(user=self.request.user)
+        form = StartapperUpdateForm(instance=startapper)
         context = {'form': form}
         return render(request, 'profile_update.html', context)
 
-    def post(self, request, *args, **kwargs):
-        form = StartapperUpdateForm(data=request.POST, files=request.FILES)
-        # form.instance.user = request.user
+    def post(self, *args, **kwargs):
+        form = StartapperUpdateForm(self.request.POST, self.request.FILES, instance=self.request.user.startapper)
         if form.is_valid():
             print(form)
             form.save()
             return redirect(reverse('startapper_home'))
         return redirect('home')
-    # def post(self, request,  *args, **kwargs):
-    #     form = StartapperUpdateForm(data=request.POST, files=request.FILES, instance=request.user)
-    #     form.instance.user = request.user
-    #     if form.is_valid():
-    #         form.save()
-    #         print("ishlamadi")
-    #         return redirect('startapper_home')
-    #     print("NImadir")
-    #     return redirect('home')
-
-# instanse = Startapper.objects.get(user__username=request.user.username)
-# print(instanse.bio)
-# if request.method == 'POST':
-#     form = StartapperUpdateForm(instance=instanse)
-#     if form.is_valid():
-#         form.save()
-#         messages.success(request, 'Your profile successfully updated')
-#         return redirect('user-update')
-# else:
-#     form = StartapperUpdateForm(instance=request.user)
-#     context = {
-#         'form': form,
-#     }
-#     return render(request, 'profile_update.html', context)
 
 
 def success_projects(request):

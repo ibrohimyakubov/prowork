@@ -1,6 +1,7 @@
 {% include 'home.html' %}
 <body>
-<<div style="background-color: #e5e5e5; width: 600px; height: 500px">
+
+<div style="background-color: #e5e5e5; width: 600px; height: 500px">
     <h3>username {{ practitioner.user.username }}</h3>
     <h2>Full Name{{ practitioner.user.full_name }}</h2>
     <h3>user type {{ practitioner.user.user_type }}</h3>
@@ -12,7 +13,7 @@
         <h3>Country N/A</h3>
     {% endif %}
     <h4>{{ practitioner.bio }}</h4>
-<h2><a href="{% url 'user-update' %}">Update Profile</a></h2>
+    <h2><a href="{% url 'user-update' %}">Update Profile</a></h2>
 </div>
 <form action="" method="post" enctype="multipart/form-data">
     {% csrf_token %}
@@ -24,12 +25,12 @@
 
 
 <div>
-        <ul>
-        {% if idea_practitioner %}
-            {% for idea in idea_practitioner %}
+    <ul>
+        {% if application_practitioner %}
+            {% for idea in application_practitioner %}
                 <li>{{ idea.title }}</li>
                 <li>{{ idea.description }}</li>
-                <li>{{ idea.resume }}</li>
+                <li><a href="{{ idea.resume }}">{{ idea.resume }}</a></li>
                 <li>{{ idea.created_at }}</li>
             {% endfor %}
         {% else %}
@@ -37,4 +38,26 @@
         {% endif %}
     </ul>
 </div>
+
+
+<h2>Create your Idea!</h2>
+<form action="{% url 'all-users-idea' %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="text" name="title">
+    <input type="text" name="description">
+    <input type="file" name="file">
+    <button type="submit">Send</button>
+</form>
+
+
+{% if idea_practitioner %}
+    {% for idea in idea_practitioner %}
+        <li>{{ idea.title }}</li>
+        <li>{{ idea.description }}</li>
+        <li><a href="media/{{ idea.file }}">{{ idea.file }}</a></li>
+        <li>{{ idea.created_at }}</li>
+    {% endfor %}
+{% else %}
+    <h3>Sizda hozircha ariza yo'q</h3>
+{% endif %}
 </body>
