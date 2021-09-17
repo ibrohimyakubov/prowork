@@ -1,12 +1,14 @@
 {% include 'home.html' %}
 <div>
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
+        {{ s_form.as_p }}
         <button style="background-color: deepskyblue; border: 1px white; color: white; width: 100px; height: 40px; border-radius: 5px">
             Update
         </button>
     </form>
-{#    <h2><a href="{% url 'user-change' %}">Update Profile</a></h2>#}
+
+    {#    <h2><a href="{% url 'user-change' %}">Update Profile</a></h2>#}
     <h2><a href="{% url 'user-password' %}">Change Password</a></h2>
 </div>

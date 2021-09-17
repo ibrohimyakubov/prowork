@@ -14,9 +14,9 @@ urlpatterns = [
 
     path('all-users-idea/', views.all_users_idea, name='all-users-idea'),
 
-    path('user-update/', views.user_update, name='user-update'),
+    path('startapper-update/', views.startapper_update, name='startapper-update'),
+    path('staff-update/', views.staff_update, name='staff-update'),
     path('user-password/', views.user_password, name='user-password'),
-    path('user-startapper-update/', views.startapper_update_, name='startapper-update'),
 
     path('success-projects/', views.success_projects, name='success-projects'),
     path('success-project/<int:pk>/', views.success_project_detail, name='success-project-detail'),

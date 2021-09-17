@@ -68,8 +68,6 @@ class UserUpdateForm(UserChangeForm):
 
 
 class StartapperUpdateForm(forms.ModelForm):
-    # image = forms.ImageField()
-
     class Meta:
         model = Startapper
         fields = ['bio', 'country', 'image']
@@ -78,7 +76,7 @@ class StartapperUpdateForm(forms.ModelForm):
 class StaffUpdateForm(forms.ModelForm):
     class Meta:
         model = Staff
-        fields = ['bio', 'image', 'country']
+        fields = ['bio', 'country', 'image']
 
 
 class CommentForm(forms.ModelForm):

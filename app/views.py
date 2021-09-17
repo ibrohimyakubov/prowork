@@ -11,7 +11,7 @@ from django.utils.datastructures import MultiValueDictKeyError
 from .models import CustomUser, Startapper, Staff, IdeaStartapper, ApplicationStaff, SuccessProjects, CommentOfPost, \
     AboutUS, ContacktsProwork, AllUsersIdea
 from app.forms import RegisterForm, IdeaStartapperForm, ApplicationDeveloperForm, ApplicationPractitionerForm, \
-    UserUpdateForm, StartapperUpdateForm, CommentForm, AllUsersIdeaForm
+    UserUpdateForm, StartapperUpdateForm, CommentForm, AllUsersIdeaForm, StaffUpdateForm
 from django.views import View
 
 
@@ -209,31 +209,40 @@ def startapper_home(request):
                   {'startapper': startapper, 'form': form, 'idea_startapper': idea_startapper})
 
 
-@login_required(login_url='login')
-def startapper_update_(request):
+@login_required(login_url='/login')
+def startapper_update(request):
+    url = request.META.get('HTTP_REFERER')
     startapper = Startapper.objects.get(user=request.user)
-    form = StartapperUpdateForm(instance=startapper)
-    if request.method == 'GET':
-        return render(request, 'profile_update.html', {'form': form})
-    else:
-        form = StartapperUpdateForm(request.POST, request.FILES, instance=startapper)
-        if form.is_valid():
+    if request.method == 'POST':
+        form = UserUpdateForm(request.POST, instance=request.user)
+        s_form = StartapperUpdateForm(request.POST, request.FILES, instance=request.user.startapper)
+        if form.is_valid() and s_form.is_valid():
             form.save()
-        return redirect('startapper_home')
+            s_form.save()
+            messages.success(request, 'You profile successfully updated!')
+            return HttpResponseRedirect(url)
+    elif request.method == 'GET':
+        form = UserUpdateForm(instance=request.user)
+        s_form = StartapperUpdateForm(instance=startapper)
+        return render(request, 'user_update.html', {'form': form, 's_form': s_form})
 
 
 @login_required(login_url='/login')
-def user_update(request):
+def staff_update(request):
     url = request.META.get('HTTP_REFERER')
+    developer = Staff.objects.get(user=request.user)
     if request.method == 'POST':
         form = UserUpdateForm(request.POST, instance=request.user)
-        if form.is_valid():
+        s_form = StaffUpdateForm(request.POST, request.FILES, instance=developer)
+        if form.is_valid() and s_form.is_valid():
             form.save()
+            s_form.save()
             messages.success(request, 'You profile successfully updated!')
             return HttpResponseRedirect(url)
-    else:
+    elif request.method == 'GET':
         form = UserUpdateForm(instance=request.user)
-        return render(request, 'user_update.html', {'form': form})
+        s_form = StartapperUpdateForm(instance=developer)
+        return render(request, 'staff_update.html', {'form': form, 's_form': s_form})
 
 
 @login_required(login_url='/login')

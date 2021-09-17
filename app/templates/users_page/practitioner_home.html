@@ -13,7 +13,12 @@
         <h3>Country N/A</h3>
     {% endif %}
     <h4>{{ practitioner.bio }}</h4>
-    <h2><a href="{% url 'user-update' %}">Update Profile</a></h2>
+    {% if practitioner.image %}
+        <img src="{{ practitioner.image.url }}" style="width: 100px; height: 50px" alt="dd">
+    {% else %}
+        <h3>No image</h3>
+    {% endif %}
+    <h2><a href="{% url 'staff-update' %}">Update Profile</a></h2>
 </div>
 <form action="" method="post" enctype="multipart/form-data">
     {% csrf_token %}
